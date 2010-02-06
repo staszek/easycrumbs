@@ -18,6 +18,7 @@ ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
   create_table :countries do |t|
     t.string :name
+    t.string :breadcrumb
   end
   
   create_table :movies do |t|
@@ -33,6 +34,8 @@ ActiveRecord::Schema.define(:version => 1) do
 end
 
 class Test::Unit::TestCase
+  include EasyCrumbs
+  
   class Country < ActiveRecord::Base
     has_many :movies
   end
@@ -44,5 +47,21 @@ class Test::Unit::TestCase
   
   class Actor < ActiveRecord::Base
     belongs_to :movie
+    
+    def breadcrumb
+      "#{first_name} #{last_name}"
+    end
+  end
+  
+  class ApplicationController < ActionController::Base
+  end
+  
+  class CountriesController < ApplicationController
+  end
+  
+  class MoviesController < ApplicationController
+  end
+  
+  class ActorsController < ApplicationController
   end
 end
