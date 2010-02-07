@@ -80,7 +80,7 @@ module EasyCrumbs
     # {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "movies"}
     def set_path(path, blank_links)
       unless path.nil?
-        path.empty? ? root_path : ActionController::Routing::Routes.generate_extras(path).first
+        path.empty? ? "/" : ActionController::Routing::Routes.generate_extras(path).first
       end
       rescue ActionController::RoutingError => e
         raise EasyCrumbs::NoPath.new(e.message) unless blank_links == true

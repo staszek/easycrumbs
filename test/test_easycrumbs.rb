@@ -111,6 +111,7 @@ class TestEasycrumbs < Test::Unit::TestCase
           end
           
           should "return root path for empty path" do
+            assert_equal("/", Breadcrumb.new(@leo, :path => {}).path)
           end
         end
       end
