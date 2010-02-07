@@ -9,7 +9,7 @@ module EasyCrumbs
     def initialize(object, options = {})      
       @object = set_object(object)
       @name = set_name(options)
-      # @path = set_path(object)
+      @path = set_path(options[:path], options[:blank_links])
     end
     
     
@@ -37,6 +37,7 @@ module EasyCrumbs
       name = @object.send name_column
     end
     
+    # Set name for controller
     def name_for_controller(i18n)
       if @object.respond_to? :breadcrumb
         @object.breadcrumb
@@ -72,6 +73,18 @@ module EasyCrumbs
     # Return name of action. 
     def action_name(action, i18n)
       i18n == true ? I18n.t("breadcrumbs.actions.#{action}") : action.titlecase
+    end
+    
+    # Set path using hash from ActionController::Routing::Routes.recognize_path
+    # Example looks like:
+    # {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "movies"}
+    def set_path(path, blank_links)
+      unless path.nil?
+        path.empty? ? root_path : ActionController::Routing::Routes.generate_extras(path).first
+      end
+      rescue ActionController::RoutingError => e
+        raise EasyCrumbs::NoPath.new(e.message) unless blank_links == true
+        nil
     end
     
   end

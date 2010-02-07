@@ -96,6 +96,23 @@ class TestEasycrumbs < Test::Unit::TestCase
             assert_equal("Editzione Leonardo Di Caprio", Breadcrumb.new(@leo, :i18n => true, :action => "edit").name)
           end
         end
+        
+        context "set path" do
+          should "return path if it exist" do
+            assert_equal("/countries/1/movies/1/actors/1", Breadcrumb.new(@leo, :path => {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "actors"}).path)
+          end
+          
+          should "raise RoutingError when can not find path" do
+            assert_raise(EasyCrumbs::NoPath) { Breadcrumb.new(@leo, :path => {:country_id => "1", :movie_id => "1", :id => "1", :action => "no_action", :controller => "actors"}) }
+          end
+          
+          should "retrun nil when can not find path and blank_links is on" do
+            assert_equal(nil, Breadcrumb.new(@leo, :path => {:country_id => "1", :movie_id => "1", :id => "1", :action => "no_action", :controller => "actors"}, :blank_links => true).path)
+          end
+          
+          should "return root path for empty path" do
+          end
+        end
       end
     end
   

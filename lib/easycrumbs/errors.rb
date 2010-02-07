@@ -15,4 +15,14 @@ module EasyCrumbs
       "Can not set name. Model #{@object_class} does not have column \"#{@column}\". Try change column name or create \"#{@column}\" method"
     end
   end
+  
+  class NoPath < StandardError
+    def initialize(routing_error)
+      @routing_error = routing_error
+    end
+    
+    def message
+      "Can not set path. You can use :blank_links to return nil for no-recognized pathes. RoutingError: #{@routing_error}"
+    end
+  end
 end
