@@ -51,27 +51,49 @@ class TestEasycrumbs < Test::Unit::TestCase
           should "raise exception if can not find name" do
             assert_raise(NoName) {  Breadcrumb.new(@leo, :name_column => "wrong_column")}
           end
+        end
+        
+        context "for controller" do
+          should "return controller name" do
+            assert_equal("Movies", Breadcrumb.new(MoviesController.new).name)
+          end
           
+          should "return breadcrumb method from controller" do
+            assert_equal("Countries list", Breadcrumb.new(CountriesController.new).name)
+          end
+        end
+        
+        context "with prefix option" do
           should "return name with prefix if action is passed by parameter and it is one of defaults(new or edit)" do
             assert_equal("Edit Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "edit").name)
           end
           
-          context "with prefix option" do
-            should "return only name if it is set to :none" do
-              assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "edit", :prefix => :none).name)
-            end
+          should "return only name if it is set to :none" do
+            assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "edit", :prefix => :none).name)
+          end
+        
+          should "return prefix and name for every action if it is set to :every" do
+            assert_equal("Show Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "show", :prefix => :every).name)
+          end
+        
+          should "return prefix and name if action is in prefix array" do
+            assert_equal("Destroy Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "destroy", :prefix => [:destroy, :edit]).name)
+          end
+        
+          should "return only name if action is not in prefix array" do
+            assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "show", :prefix => [:destroy, :edit]).name)
+          end
+        end
+        
+        context "with i18n enable" do
+          should "return transalted name for controller" do
+            I18n.expects(:t).with("breadcrumbs.controllers.movies").returns("la movies")
+            assert_equal("la movies", Breadcrumb.new(MoviesController.new, :i18n => true).name)
+          end
           
-            should "return prefix and name for every action if it is set to :every" do
-              assert_equal("Show Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "show", :prefix => :every).name)
-            end
-          
-            should "return prefix and name if action is in prefix array" do
-              assert_equal("Destroy Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "destroy", :prefix => [:destroy, :edit]).name)
-            end
-          
-            should "return only name if action is not in prefix array" do
-              assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "show", :prefix => [:destroy, :edit]).name)
-            end
+          should "return transalted action as a prefix" do
+            I18n.expects(:t).with("breadcrumbs.actions.edit").returns("Editzione")
+            assert_equal("Editzione Leonardo Di Caprio", Breadcrumb.new(@leo, :i18n => true, :action => "edit").name)
           end
         end
       end

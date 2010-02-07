@@ -57,6 +57,9 @@ class Test::Unit::TestCase
   end
   
   class CountriesController < ApplicationController
+    def breadcrumb
+      "Countries list"
+    end
   end
   
   class MoviesController < ApplicationController

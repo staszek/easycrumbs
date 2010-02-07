@@ -23,19 +23,26 @@ module EasyCrumbs
     def set_name(options = {})
       if object.is_a?(ActiveRecord::Base)
         options[:name_column] ||= "breadcrumb"
-        options[:prefix] ||= [:new, :edit]
-        name_for_model(options[:name_column], options[:action], options[:prefix])
+        name = name_for_model(options[:name_column])
       else
-        #name_for_controller
+        name = name_for_controller(options[:i18n])
       end
+      add_prefix(name, options[:action], options[:prefix], options[:i18n])
     end
     
     # Set name for model
     # Model has to have column equal to name_column
-    def name_for_model(name_column, action, prefix)
+    def name_for_model(name_column)
       raise EasyCrumbs::NoName.new(@object.class, name_column) unless @object.respond_to? name_column
       name = @object.send name_column
-      add_prefix(name, action, prefix)
+    end
+    
+    def name_for_controller(i18n)
+      if @object.respond_to? :breadcrumb
+        @object.breadcrumb
+      else
+        i18n == true ? I18n.t("breadcrumbs.controllers.#{@object.controller_name}") : @object.controller_name.titlecase
+      end
     end
     
     # Add specyfic prefix if action is passed
@@ -46,8 +53,8 @@ module EasyCrumbs
     #
     # Example
     # [:show, :new]        -  add prefix only for show and new
-    def add_prefix(model_name, action, prefix)
-      name = model_name
+    def add_prefix(object_name, action, prefix, i18n)
+      name = object_name
       unless action.nil?
         prefix = case prefix
           when :every
@@ -55,11 +62,16 @@ module EasyCrumbs
           when :none
             []
           else
-            prefix
+            prefix || [:new, :edit]
         end
-        name = "#{action.titlecase} #{name}" if prefix.include?(action.to_sym)
+        name = "#{action_name(action, i18n)} #{name}" if prefix.include?(action.to_sym)
       end
       name
+    end
+    
+    # Return name of action. 
+    def action_name(action, i18n)
+      i18n == true ? I18n.t("breadcrumbs.actions.#{action}") : action.titlecase
     end
     
   end
