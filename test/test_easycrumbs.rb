@@ -120,7 +120,7 @@ class TestEasycrumbs < Test::Unit::TestCase
     context "Collection" do
       setup do
         Collection.any_instance.stubs(:request_path => "/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}", :request_method => :put)
-        @collection = Collection.new
+        @collection = Collection.new("request object")
       end
       
       context "finding route" do
@@ -144,7 +144,7 @@ class TestEasycrumbs < Test::Unit::TestCase
       
       context "selecting right segments" do
         should "select only static and dynamic segments" do
-          results = Collection.new.segments
+          results = @collection.segments
           results = results.map(&:class).uniq
           results.delete(ActionController::Routing::StaticSegment)
           results.delete(ActionController::Routing::DynamicSegment)

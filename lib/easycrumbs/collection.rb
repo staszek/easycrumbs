@@ -2,7 +2,9 @@ module EasyCrumbs
   class Collection
     attr_reader :breadcrumbs, :route, :path
     
-    def initialize(options = {})
+    def initialize(request, options = {})
+      @request = request
+      
       @route = find_route
       @path = find_path
       @controller = @path[:controller]
@@ -130,9 +132,11 @@ module EasyCrumbs
     private
     
     def request_path
+      @request.path
     end
     
     def request_method
+      @request.method
     end
   end
 end
