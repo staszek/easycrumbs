@@ -4,7 +4,7 @@ class TestEasycrumbs < Test::Unit::TestCase
   context "EasyCrumbs tests" do
     setup do
       @usa = Country.create(:name => "USA", :breadcrumb => "United States of America")
-      @titanic = @usa.movies.create(:name => "Titanic")
+      @titanic = @usa.movies.create(:name => "Titanic", :breadcrumb => "Titanic")
       @leo = @titanic.actors.create(:first_name => "Leonardo", :last_name => "Di Caprio")
     end
 
@@ -119,7 +119,7 @@ class TestEasycrumbs < Test::Unit::TestCase
   
     context "Collection" do
       setup do
-        Collection.any_instance.stubs(:request_path => "/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}", :request_method => :get)
+        Collection.any_instance.stubs(:request_path => "/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}", :request_method => :put)
         @collection = Collection.new
       end
       
@@ -138,7 +138,7 @@ class TestEasycrumbs < Test::Unit::TestCase
       
       context "find path" do
         should "retrun path hash" do
-          assert_equal({:action => "show", :controller => "actors", :country_id => @usa.id.to_s, :movie_id => @titanic.id.to_s, :id => @leo.id.to_s}, @collection.path)
+          assert_equal({:action => "update", :controller => "actors", :country_id => @usa.id.to_s, :movie_id => @titanic.id.to_s, :id => @leo.id.to_s}, @collection.path)
         end
       end
       
@@ -176,13 +176,64 @@ class TestEasycrumbs < Test::Unit::TestCase
         end
       end
       
+      context "path_for_model" do
+        should "return id and current action for last object" do
+          segment = ActionController::Routing::DynamicSegment.new(:id)
+          assert_equal({:action => 'update', :id => @leo.id.to_s}, @collection.path_for_model(segment))
+        end
+        
+        should "return show action and object id for not last object" do
+          segment = ActionController::Routing::DynamicSegment.new(:movie_id)
+          assert_equal({:action => 'show', :movie_id => @titanic.id.to_s}, @collection.path_for_model(segment))
+        end
+      end
+      
+      context "path_for_controller" do
+        should "return index action and controller name" do
+          segment = ActionController::Routing::StaticSegment.new("movies")
+          assert_equal({:action => 'index', :controller => 'movies'}, @collection.path_for_controller(segment))
+        end
+      end
+      
+      context "repaired_model_path" do
+        should "return repaired path if model is connected with controller" do
+          path = {:action => "show", :controller => "movies", :movie_id => 3}
+          assert_equal({:action => "show", :controller => "movies", :id => 3}, @collection.repaired_model_path(path))
+        end
+        
+        should "return same path if model is not connected with controller" do
+          path = {:action => "show", :controller => "actors", :movie_id => 3}
+          assert_equal(path, @collection.repaired_model_path(path))
+        end
+      end
+      
+      context "make_pathes" do
+        should "return patches array for objects" do
+          assert_equal([
+          {:action => 'index', :controller => 'countries'},
+          {:action => 'show', :controller => 'countries', :id => @usa.id.to_s},
+          {:action => 'index', :controller => 'movies', :country_id => @usa.id.to_s},
+          {:action => 'show', :controller => 'movies', :country_id => @usa.id.to_s, :id => @titanic.id.to_s},
+          {:action => 'index', :controller => 'actors', :country_id => @usa.id.to_s, :movie_id => @titanic.id.to_s},
+          {:action => 'update', :controller => 'actors', :country_id => @usa.id.to_s, :movie_id => @titanic.id.to_s, :id => @leo.id.to_s}
+          ], @collection.make_pathes)
+        end
+      end
+      
       context "make_breadcrumbs" do
+        setup do
+          @results = @collection.make_breadcrumbs({:prefix => :every})
+        end
+        
         should "return array of breadcrumbs objects" do
-          results = @collection.make_breadcrumbs
-          assert_equal(@collection.objects.size, results.size)
-          results = results.map(&:class).uniq
+          assert_equal(@collection.objects.size + 1, @results.size)
+          results = @results.map(&:class).uniq
           assert_equal(1, results.size)
           assert_equal(EasyCrumbs::Breadcrumb, results.first)
+        end
+        
+        should "last breadcrumb have name with action prefix" do
+          assert_equal("Update Leonardo Di Caprio", @results.last.name)
         end
       end
     end
