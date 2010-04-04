@@ -14,6 +14,12 @@ module EasyCrumbs
       routes.first
     end
     
+    def segments(route)
+      route.segments.select do |segment|
+        [ActionController::Routing::DynamicSegment, ActionController::Routing::StaticSegment].include? segment.class
+      end
+    end
+    
     private
     
     def path

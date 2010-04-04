@@ -135,6 +135,16 @@ class TestEasycrumbs < Test::Unit::TestCase
           end
         end
       end
+      
+      context "selecting right segments" do
+        should "select only static and dynamic segments" do
+          results = Collection.new.segments(ActionController::Routing::Routes.routes[0])
+          results = results.map(&:class).uniq
+          results.delete(ActionController::Routing::StaticSegment)
+          results.delete(ActionController::Routing::DynamicSegment)
+          assert_equal(true, results.empty?)
+        end
+      end
     end
   
     context "View Helpers" do
