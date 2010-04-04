@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{easycrumbs}
-  s.version = "0.0.0"
+  s.version = "0.0.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stanis\305\202aw Kolarzowski"]
-  s.date = %q{2010-02-06}
+  s.date = %q{2010-02-07}
   s.description = %q{Easy breadcrumbs for your website}
   s.email = %q{stanislaw.kolarzowski@gmail.com}
   s.extra_rdoc_files = [
@@ -23,8 +23,14 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "easycrumbs.gemspec",
      "lib/easycrumbs.rb",
+     "lib/easycrumbs/breadcrumb.rb",
+     "lib/easycrumbs/collection.rb",
+     "lib/easycrumbs/errors.rb",
+     "lib/easycrumbs/view_helpers.rb",
      "test/helper.rb",
+     "test/routes.rb",
      "test/test_easycrumbs.rb"
   ]
   s.homepage = %q{http://github.com/staszek/easycrumbs}
@@ -34,6 +40,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Easy breadcrumbs}
   s.test_files = [
     "test/helper.rb",
+     "test/routes.rb",
      "test/test_easycrumbs.rb"
   ]
 

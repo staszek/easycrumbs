@@ -118,6 +118,23 @@ class TestEasycrumbs < Test::Unit::TestCase
     end
   
     context "Collection" do
+      context "finding route" do
+        setup do
+          @collection = Collection.new
+          @collection.stubs(:path => "/countries/1/movies/1/actors/1", :method => :get)
+        end
+        
+        should "return route if it can find it" do
+          assert_equal(ActionController::Routing::Route, @collection.find_route.class)
+        end
+        
+        should "raise error when it can not find route" do
+          assert_raise(EasyCrumbs::NotRecognized) do
+            @collection.stubs(:path => "/countres/1/videos/1")
+            @collection.find_route
+          end
+        end
+      end
     end
   
     context "View Helpers" do
