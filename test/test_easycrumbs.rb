@@ -118,31 +118,71 @@ class TestEasycrumbs < Test::Unit::TestCase
     end
   
     context "Collection" do
+      setup do
+        Collection.any_instance.stubs(:request_path => "/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}", :request_method => :get)
+        @collection = Collection.new
+      end
+      
       context "finding route" do
-        setup do
-          @collection = Collection.new
-          @collection.stubs(:path => "/countries/1/movies/1/actors/1", :method => :get)
-        end
-        
         should "return route if it can find it" do
-          assert_equal(ActionController::Routing::Route, @collection.find_route.class)
+          assert_equal(ActionController::Routing::Route, @collection.route.class)
         end
         
         should "raise error when it can not find route" do
           assert_raise(EasyCrumbs::NotRecognized) do
-            @collection.stubs(:path => "/countres/1/videos/1")
+            @collection.stubs(:request_path => "/countres/1/videos/1")
             @collection.find_route
           end
         end
       end
       
+      context "find path" do
+        should "retrun path hash" do
+          assert_equal({:action => "show", :controller => "actors", :country_id => @usa.id.to_s, :movie_id => @titanic.id.to_s, :id => @leo.id.to_s}, @collection.path)
+        end
+      end
+      
       context "selecting right segments" do
         should "select only static and dynamic segments" do
-          results = Collection.new.segments(ActionController::Routing::Routes.routes[0])
+          results = Collection.new.segments
           results = results.map(&:class).uniq
           results.delete(ActionController::Routing::StaticSegment)
           results.delete(ActionController::Routing::DynamicSegment)
           assert_equal(true, results.empty?)
+        end
+      end
+      
+      context "pick_controller" do
+        should "return controller object" do
+          assert_equal(MoviesController, @collection.pick_controller(ActionController::Routing::StaticSegment.new("movies")).class)
+        end
+      end
+      
+      context "pick_model" do
+        should "return model object when key has model name" do
+          segment = ActionController::Routing::DynamicSegment.new(:movie_id)
+          assert_equal(@titanic, @collection.pick_model(segment))
+        end
+        
+        should "return model object when key has not model name"do
+          segment = ActionController::Routing::DynamicSegment.new(:id)
+          assert_equal(@leo, @collection.pick_model(segment))
+        end
+      end
+      
+      context "objects" do
+        should "change segments into objects" do
+          assert_equal([CountriesController, Country, MoviesController, Movie, ActorsController, Actor], @collection.objects.map(&:class))
+        end
+      end
+      
+      context "make_breadcrumbs" do
+        should "return array of breadcrumbs objects" do
+          results = @collection.make_breadcrumbs
+          assert_equal(@collection.objects.size, results.size)
+          results = results.map(&:class).uniq
+          assert_equal(1, results.size)
+          assert_equal(EasyCrumbs::Breadcrumb, results.first)
         end
       end
     end

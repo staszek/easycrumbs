@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table :movies do |t|
     t.string :name
     t.integer :country_id
+    t.string :breadcrumb
   end
   
   create_table :actors do |t|
@@ -33,38 +34,39 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 end
 
-class Test::Unit::TestCase
-  include EasyCrumbs
+
+# =========== Rails Classes and Objects ===========
+
+include EasyCrumbs
+
+class Country < ActiveRecord::Base
+  has_many :movies
+end
+
+class Movie < ActiveRecord::Base
+  has_many :actors
+  belongs_to :country
+end
+
+class Actor < ActiveRecord::Base
+  belongs_to :movie
   
-  class Country < ActiveRecord::Base
-    has_many :movies
+  def breadcrumb
+    "#{first_name} #{last_name}"
   end
-  
-  class Movie < ActiveRecord::Base
-    has_many :actors
-    belongs_to :country
+end
+
+class ApplicationController < ActionController::Base
+end
+
+class CountriesController < ApplicationController
+  def breadcrumb
+    "Countries list"
   end
-  
-  class Actor < ActiveRecord::Base
-    belongs_to :movie
-    
-    def breadcrumb
-      "#{first_name} #{last_name}"
-    end
-  end
-  
-  class ApplicationController < ActionController::Base
-  end
-  
-  class CountriesController < ApplicationController
-    def breadcrumb
-      "Countries list"
-    end
-  end
-  
-  class MoviesController < ApplicationController
-  end
-  
-  class ActorsController < ApplicationController
-  end
+end
+
+class MoviesController < ApplicationController
+end
+
+class ActorsController < ApplicationController
 end
