@@ -92,7 +92,8 @@ class TestEasycrumbs < Test::Unit::TestCase
           end
           
           should "return transalted action as a prefix" do
-            I18n.expects(:t).with("breadcrumbs.actions.edit").returns("Editzione")
+            name = "Leonardo Di Caprio"
+            I18n.expects(:t).with("breadcrumbs.actions.edit", {:name => name}).returns("Editzione #{name}")
             assert_equal("Editzione Leonardo Di Caprio", Breadcrumb.new(@leo, :i18n => true, :action => "edit").name)
           end
         end
@@ -112,6 +113,10 @@ class TestEasycrumbs < Test::Unit::TestCase
           
           should "return root path for empty path" do
             assert_equal("/", Breadcrumb.new(@leo, :path => {}).path)
+          end
+          
+          should "return root path for nil path" do
+            assert_equal("/", Breadcrumb.new(@leo).path)
           end
         end
       end

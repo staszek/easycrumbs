@@ -65,23 +65,21 @@ module EasyCrumbs
           else
             prefix || [:new, :edit]
         end
-        name = "#{action_name(action, i18n)} #{name}" if prefix.include?(action.to_sym)
+        name = action_name(action, i18n, name) if prefix.include?(action.to_sym)
       end
       name
     end
     
     # Return name of action. 
-    def action_name(action, i18n)
-      i18n == true ? I18n.t("breadcrumbs.actions.#{action}") : action.titlecase
+    def action_name(action, i18n, name)
+      i18n == true ? I18n.t("breadcrumbs.actions.#{action}", :name => name) : "#{action.titlecase} #{name}"
     end
     
     # Set path using hash from ActionController::Routing::Routes.recognize_path
     # Example looks like:
     # {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "movies"}
     def set_path(path, blank_links)
-      unless path.nil?
-        path.empty? ? "/" : ActionController::Routing::Routes.generate_extras(path).first
-      end
+      path.nil? || path.empty? ? "/" : ActionController::Routing::Routes.generate_extras(path).first
       rescue ActionController::RoutingError => e
         raise EasyCrumbs::NoPath.new(e.message) unless blank_links == true
         nil
