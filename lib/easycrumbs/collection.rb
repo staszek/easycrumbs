@@ -1,7 +1,5 @@
 module EasyCrumbs
-  include ActionView::Helpers
-  
-  class Collection
+  class Collection    
     attr_reader :breadcrumbs, :route, :path
     
     def initialize(request, options = {})
@@ -155,6 +153,10 @@ module EasyCrumbs
     
     def request_method
       @request.method
+    end
+    
+    def link_to(name, path)
+      "<a href=\"#{path}\">#{name}</a>"
     end
   end
 end
