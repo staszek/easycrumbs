@@ -155,6 +155,12 @@ class TestEasycrumbs < Test::Unit::TestCase
           results.delete(ActionController::Routing::DynamicSegment)
           assert_equal(true, results.empty?)
         end
+        
+        should "return proper segments for member action" do
+          Collection.any_instance.stubs(:request_path => "/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}/edit", :request_method => :get)
+          collection = Collection.new("request object")
+          assert_equal(6, collection.segments.size)
+        end
       end
       
       context "pick_controller" do

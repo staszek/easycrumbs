@@ -34,9 +34,11 @@ module EasyCrumbs
     # Select only static and dynamic segments form route. Static segments points at controllers and dynamic points at models. 
     # It is given in right order
     def segments
-      @route.segments.select do |segment|
+      segments = @route.segments.select do |segment|
         [ActionController::Routing::DynamicSegment, ActionController::Routing::StaticSegment].include? segment.class
       end
+      segments.pop if segments.last.is_a?(ActionController::Routing::StaticSegment) && segments.last.value == @action
+      segments
     end
     
     # Returning controller object from static segment
