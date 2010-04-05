@@ -1,7 +1,7 @@
 module ActionView
   class Base
-    def show_breadcrumbs(options = {})
-      EasyCrumbs::Collection.new(request, options).breadcrumbs
+    def breadcrumbs(options = {})
+      EasyCrumbs::Collection.new(request, options).render(options)
     end
   end
 end

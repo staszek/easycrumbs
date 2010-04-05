@@ -1,4 +1,6 @@
 module EasyCrumbs
+  include ActionView::Helpers
+  
   class Collection
     attr_reader :breadcrumbs, :route, :path
     
@@ -132,6 +134,19 @@ module EasyCrumbs
       end
     end
     
+    def render(options = {})
+      options[:separator] ||= " > "
+      options[:last_link] = true if options[:last_link].nil?
+      
+      elements = @breadcrumbs.map do |breadcrumb|
+        if options[:last_link] == false && breadcrumb == @breadcrumbs.last
+          breadcrumb.name
+        else
+          link_to breadcrumb.name, breadcrumb.path
+        end
+      end
+      elements.join(options[:separator])
+    end
     private
     
     def request_path

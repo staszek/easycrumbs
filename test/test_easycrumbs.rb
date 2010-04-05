@@ -256,9 +256,36 @@ class TestEasycrumbs < Test::Unit::TestCase
           assert_equal("Update Leonardo Di Caprio", @results.last.name)
         end
       end
-    end
-  
-    context "View Helpers" do
+      
+      context "render" do
+        setup do
+          @results = [  "<a href=\"/\">Application</a>",
+                      "<a href=\"/countries\">Countries list</a>",
+                      "<a href=\"/countries/#{@usa.id}\">United States of America</a>",
+                      "<a href=\"/countries/#{@usa.id}/movies\">Movies</a>",
+                      "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}\">Titanic</a>",
+                      "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}/actors\">Actors</a>",
+                      "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}\">Leonardo Di Caprio</a>"]
+        end
+        
+        context "separator" do
+          should "render all breadcrumbs with links and standard separator" do
+            assert_equal(@results.join(" > "), @collection.render)
+          end
+          
+          should "render custom separator" do
+            assert_equal(@results.join(" | "), @collection.render(:separator => " | "))
+          end
+        end
+        
+        context "last item not link" do
+          should "last item not be link when last_link option is false" do
+            @results = @results[0..-2] << "Leonardo Di Caprio"
+            assert_equal(@results.join(" > "), @collection.render(:last_link => false))
+          end
+        end
+      end
+      
     end
   end
 end
