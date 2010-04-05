@@ -33,6 +33,7 @@ module EasyCrumbs
     
     # Select only static and dynamic segments form route. Static segments points at controllers and dynamic points at models. 
     # It is given in right order
+    # If last segment is equal to member action then it should be deleted. for example movies/123/edit should not return "edit" segment
     def segments
       segments = @route.segments.select do |segment|
         [ActionController::Routing::DynamicSegment, ActionController::Routing::StaticSegment].include? segment.class

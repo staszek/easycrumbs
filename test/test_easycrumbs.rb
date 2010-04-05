@@ -51,6 +51,15 @@ class TestEasycrumbs < Test::Unit::TestCase
           should "raise exception if can not find name" do
             assert_raise(NoName) {  Breadcrumb.new(@leo, :name_column => "wrong_column")}
           end
+          
+          should "return model name if column return nil" do
+            assert_equal("Movie", Breadcrumb.new(Movie.new).name)
+          end
+          
+          should "return model name from i18n if column return nil" do
+            I18n.expects(:t).with("breadcrumbs.models.movie").returns("Das film")
+            assert_equal("Das film", Breadcrumb.new(Movie.new, :i18n => true).name)
+          end
         end
         
         context "for controller" do

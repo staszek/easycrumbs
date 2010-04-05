@@ -23,7 +23,7 @@ module EasyCrumbs
     def set_name(options = {})
       if object.is_a?(ActiveRecord::Base)
         options[:name_column] ||= "breadcrumb"
-        name = name_for_model(options[:name_column])
+        name = name_for_model(options[:name_column], options[:i18n])
       else
         name = name_for_controller(options[:i18n])
       end
@@ -32,9 +32,15 @@ module EasyCrumbs
     
     # Set name for model
     # Model has to have column equal to name_column
-    def name_for_model(name_column)
+    def name_for_model(name_column, i18n)
       raise EasyCrumbs::NoName.new(@object.class, name_column) unless @object.respond_to? name_column
       name = @object.send name_column
+      name.nil? ? name_for_nil(@object, i18n) : name
+    end
+    
+    # Set name for object if it is nil
+    def name_for_nil(object, i18n)
+      i18n == true ? I18n.t("breadcrumbs.models.#{object.class.to_s.downcase}") : @object.class.to_s
     end
     
     # Set name for controller
