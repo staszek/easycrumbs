@@ -15,16 +15,16 @@ To install the gem type:
 
 == Quick start
 
-It is really easy to have breadcrumbs in your project. Just type
+It is really easy to have breadcrumbs in your project. Just type this into any view file and breadcrumbs will work for you.
   breadcrumbs
-into any view file and breadcrumbs will work for you.
+
 ERB example:
   <div id=breadcrumbs>
     <%= breadcrumbs %>
   </div>
 HAML example:
   #breadcrumbs
-    = breadctumbs
+    = breadcrumbs
 
 You do not need to specify any more options in models or controllers. Easycrumbs will take everything it needs from your routes.rb file.
 
@@ -39,7 +39,7 @@ could generate this breadcrumb
 
 == Model names
 === From database
-If your model have breadcrumb column in database then it will be used to generate breadcrumbs
+If your model has breadcrumb column in database then it will be used to generate breadcrumbs
   @usa = Country.new(:breadcrumb => "Usa")
   @titanic = Movie.new(:breadcrumb => "Titanic")
   @leo = Actor.new(:breadcumb => "Leonardo Di Caprio")
@@ -56,7 +56,7 @@ You can change column name using :name_column option
   Home > Countries > Usa > Movies > Titanic > Actors > Edit Leonardo Di Caprio
 
 === From custom method
-If you need custom name then just create method name breadcrumb in your model
+If you need custom name then just create method named breadcrumb in your model
   class Actor < ActiveRecord::Base
     def breadcrumb
       "the best male actor: " + first_name
@@ -69,7 +69,7 @@ If you need custom name then just create method name breadcrumb in your model
 Easycrumbs fully support i18n
   breadcrumbs :i18n => true
 
-  Name will be take from this key if your model does not have breadcrumb column or method:
+Name will be taken from this key if your model does not have breadcrumb column or method:
     breadcrumbs.models.model_name
 Example en.yml
   en:
@@ -104,7 +104,7 @@ Similar to models you can specify custom breadcrumb method
 Controller can also use i18n names
   breadcrumbs :i18n => true
 
-  Name will be taken from this key if your controller does not have method:
+Name will be taken from this key if your controller does not have method:
     breadcrumbs.controllers.controller_name
 Example en.yml
   en:
