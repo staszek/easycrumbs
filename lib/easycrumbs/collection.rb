@@ -38,13 +38,19 @@ module EasyCrumbs
       segments = @route.segments.select do |segment|
         [ActionController::Routing::DynamicSegment, ActionController::Routing::StaticSegment].include? segment.class
       end
-      segments.pop if segments.last.is_a?(ActionController::Routing::StaticSegment) && segments.last.value == @action
+      segments.pop if segments.last.is_a?(ActionController::Routing::StaticSegment) && segments.last.value == @action && segments.last.value != 'new'
       segments
     end
 
     # Returning controller object from static segment
     def pick_controller(segment)
+      segment = last_controller_segment if segment.value == "new"
       "#{segment.value.titlecase}Controller".constantize.new
+    end
+
+    # Returns last controller segment in segments
+    def last_controller_segment
+      segments.select{ |seg| seg.is_a?(ActionController::Routing::StaticSegment) && seg.value != "new"}.last
     end
 
     # Retrung model object from dynamic segment
@@ -97,7 +103,11 @@ module EasyCrumbs
 
     # Retrun parameters for path of controller
     def path_for_controller(segment)
-      {:action => 'index', :controller => segment.value}
+      if segment.value == "new"
+        {:action => "new", :controller => last_controller_segment.value}
+      else
+        {:action => 'index', :controller => segment.value}
+      end
     end
 
     # If controller name is connected with object then parameter should be :id instead of :object_id
