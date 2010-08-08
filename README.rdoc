@@ -2,7 +2,7 @@
 
 Easy breadcrumbs for your site
 
-* gemcutter[not yet]
+* gemcutter[http://rubygems.org/gems/easycrumbs]
 * repository[http://github.com/staszek/easycrumbs]
 
 == Installation
@@ -13,9 +13,120 @@ If you don't have the {Gemcutter sources}[http://gemcutter.org/pages/gem_docs] y
 To install the gem type:
   gem install easycrumbs
 
-== Usage
+== Quick start
 
-It does not work yet.
+It is really easy to have breadcrumbs in your project. Just type
+  breadcrumbs
+into any view file and breadcrumbs will work for you.
+ERB example:
+  <div id=breadcrumbs>
+    <%= breadcrumbs %>
+  </div>
+HAML example:
+  #breadcrumbs
+    = breadctumbs
+
+You do not need to specify any more options in models or controllers. Easycrumbs will take everything it needs from your routes.rb file.
+
+The routes.rb file with
+  map.resources :countries do |country|
+    country.resources :movies do |movie|
+      movie.resources :actors
+    end
+  end
+could generate this breadcrumb
+  Home > Countries > Country > Movies > Movie > Actors > Edit Actor
+
+== Model names
+=== From database
+If your model have breadcrumb column in database then it will be used to generate breadcrumbs
+  @usa = Country.new(:breadcrumb => "Usa")
+  @titanic = Movie.new(:breadcrumb => "Titanic")
+  @leo = Actor.new(:breadcumb => "Leonardo Di Caprio")
+
+  Home > Countries > Usa > Movies > Titanic > Actors > Edit Leonardo Di Caprio
+
+You can change column name using :name_column option
+  breadcrumbs :name_column => :seo
+
+  @usa = Country.new(:seo => "Usa")
+  @titanic = Movie.new(:seo => "Titanic")
+  @leo = Actor.new(:seo => "Leonardo Di Caprio")
+
+  Home > Countries > Usa > Movies > Titanic > Actors > Edit Leonardo Di Caprio
+
+=== From custom method
+If you need custom name then just create method name breadcrumb in your model
+  class Actor < ActiveRecord::Base
+    def breadcrumb
+      "the best male actor: " + first_name
+    end
+  end
+
+  Home > Countries > Usa > Movies > Titanic > Actors > Edit the best male actor: Leonardo
+
+=== From i18n
+Easycrumbs fully support i18n
+  breadcrumbs :i18n => true
+
+  Name will be take from this key if your model does not have breadcrumb column or method:
+    breadcrumbs.models.model_name
+Example en.yml
+  en:
+      breadcrumbs:
+          models:
+              country: C0untry
+              movie: M0v13
+              actor: 4ct0r
+
+  Home > Countries > C0untry > Movies > M0v13 > Actors > Edit 4act0r
+
+== Controller names
+===From controller name
+Default behavior is to use controller name
+  class CountriesController < ApplicationController
+  class MoviesController < ApplicationController
+  class ActorsController < ApplicationController
+
+  Home > Countries > Usa > Movies > Titanic > Actors > Edit Leonardo Di Caprio
+
+=== From custom method
+Similar to models you can specify custom breadcrumb method
+  class MoviesController < ApplicationController
+    def breadcrumb
+      "Movies (#{collection.size})"
+    end
+  end
+
+  Home > Countries > Usa > Movies (234) > Titanic > Actors > Edit Leonardo Di Caprio
+
+=== From i18n
+Controller can also use i18n names
+  breadcrumbs :i18n => true
+
+  Name will be taken from this key if your controller does not have method:
+    breadcrumbs.controllers.controller_name
+Example en.yml
+  en:
+      breadcrumbs:
+        controllers:
+            application: H0m3
+            countries: C0untr135
+            movies: M0v135
+            actors: 4ct0r5
+
+  H0m3 > C0untr135 > Usa > M0v135 > Titanic > 4ct0r5 > Edit Leonardo Di Caprio
+
+== Action prefixes
+default behavior
+from i18n
+
+== Blank links option
+
+== Rendering options
+
+separator
+last_link
 
 == Copyright
 
