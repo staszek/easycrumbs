@@ -1,24 +1,24 @@
 module EasyCrumbs
   class Breadcrumb
     attr_reader :object, :name, :path
-    
+
     # Breadcrumb object:
     # object  -   just object from application. Could be a model or controller
     # name    -   printed name
     # path    -   path to this object
-    def initialize(object, options = {})      
+    def initialize(object, options = {})
       @object = set_object(object)
       @name = set_name(options)
       @path = set_path(options[:path], options[:blank_links])
     end
-    
-    
+
+
     # Object from application must be a model or controller
     def set_object(object)
       raise EasyCrumbs::InvalidObject unless object.is_a?(ActionController::Base) || object.is_a?(ActiveRecord::Base)
       object
     end
-    
+
     # Set name for model or controller
     def set_name(options = {})
       if object.is_a?(ActiveRecord::Base)
@@ -29,29 +29,36 @@ module EasyCrumbs
       end
       add_prefix(name, options[:action], options[:prefix], options[:i18n])
     end
-    
+
     # Set name for model
     # Model has to have column equal to name_column
     def name_for_model(name_column, i18n)
-      raise EasyCrumbs::NoName.new(@object.class, name_column) unless @object.respond_to? name_column
-      name = @object.send name_column
-      name.nil? ? name_for_nil(@object, i18n) : name
+      if @object.respond_to? name_column
+        @object.send name_column
+      else
+        i18n == true ? I18n.t("breadcrumbs.models.#{object.class.to_s.downcase}") : default_model_name
+      end
     end
-    
-    # Set name for object if it is nil
-    def name_for_nil(object, i18n)
-      i18n == true ? I18n.t("breadcrumbs.models.#{object.class.to_s.downcase}") : @object.class.to_s
-    end
-    
+
     # Set name for controller
     def name_for_controller(i18n)
       if @object.respond_to? :breadcrumb
         @object.breadcrumb
       else
-        i18n == true ? I18n.t("breadcrumbs.controllers.#{@object.controller_name}") : @object.controller_name.titlecase
+        i18n == true ? I18n.t("breadcrumbs.controllers.#{@object.controller_name}") : default_controller_name
       end
     end
-    
+
+    #Return default name for model object
+    def default_model_name
+      @object.class.to_s
+    end
+
+    # Return default name for controller object
+    def default_controller_name
+      @object.class == ApplicationController ? "Home" : @object.controller_name.titlecase
+    end
+
     # Add specyfic prefix if action is passed
     # prefix =
     # :every               -  add prefix for every action
@@ -75,12 +82,12 @@ module EasyCrumbs
       end
       name
     end
-    
-    # Return name of action. 
+
+    # Return name of action.
     def action_name(action, i18n, name)
       i18n == true ? I18n.t("breadcrumbs.actions.#{action}", :name => name) : "#{action.titlecase} #{name}"
     end
-    
+
     # Set path using hash from ActionController::Routing::Routes.recognize_path
     # Example looks like:
     # {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "movies"}
@@ -90,6 +97,6 @@ module EasyCrumbs
         raise EasyCrumbs::NoPath.new(e.message) unless blank_links == true
         nil
     end
-    
+
   end
 end

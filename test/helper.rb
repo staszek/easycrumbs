@@ -13,20 +13,19 @@ require 'easycrumbs'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Base.configurations = true
- 
+
 ActiveRecord::Schema.verbose = false
 ActiveRecord::Schema.define(:version => 1) do
   create_table :countries do |t|
     t.string :name
     t.string :breadcrumb
   end
-  
+
   create_table :movies do |t|
     t.string :name
     t.integer :country_id
-    t.string :breadcrumb
   end
-  
+
   create_table :actors do |t|
     t.string :first_name
     t.string :last_name
@@ -50,7 +49,7 @@ end
 
 class Actor < ActiveRecord::Base
   belongs_to :movie
-  
+
   def breadcrumb
     "#{first_name} #{last_name}"
   end

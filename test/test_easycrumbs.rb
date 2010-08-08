@@ -4,7 +4,7 @@ class TestEasycrumbs < Test::Unit::TestCase
   context "EasyCrumbs tests" do
     setup do
       @usa = Country.create(:name => "USA", :breadcrumb => "United States of America")
-      @titanic = @usa.movies.create(:name => "Titanic", :breadcrumb => "Titanic")
+      @titanic = @usa.movies.create(:name => "Titanic")
       @leo = @titanic.actors.create(:first_name => "Leonardo", :last_name => "Di Caprio")
     end
 
@@ -36,7 +36,7 @@ class TestEasycrumbs < Test::Unit::TestCase
 
       context "set name" do
         context "for model" do
-          should "return breadcrumb column by default" do
+          should "return breadcrumb column by default if it has breadcrumb column" do
             assert_equal("United States of America", Breadcrumb.new(@usa).name)
           end
 
@@ -48,15 +48,11 @@ class TestEasycrumbs < Test::Unit::TestCase
             assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo).name)
           end
 
-          should "raise exception if can not find name" do
-            assert_raise(NoName) {  Breadcrumb.new(@leo, :name_column => "wrong_column")}
-          end
-
-          should "return model name if column return nil" do
+          should "return model name if it not respond to name_column method and i18n is turn off" do
             assert_equal("Movie", Breadcrumb.new(Movie.new).name)
           end
 
-          should "return model name from i18n if column return nil" do
+          should "return model name from i18n if it not respond to name_column method and i18n is turn on" do
             I18n.expects(:t).with("breadcrumbs.models.movie").returns("Das film")
             assert_equal("Das film", Breadcrumb.new(Movie.new, :i18n => true).name)
           end
@@ -65,6 +61,10 @@ class TestEasycrumbs < Test::Unit::TestCase
         context "for controller" do
           should "return controller name" do
             assert_equal("Movies", Breadcrumb.new(MoviesController.new).name)
+          end
+
+          should "return Home for ApplicationController" do
+            assert_equal("Home", Breadcrumb.new(ApplicationController.new).name)
           end
 
           should "return breadcrumb method from controller" do
@@ -305,11 +305,11 @@ class TestEasycrumbs < Test::Unit::TestCase
 
       context "render" do
         setup do
-          @results = [  "<a href=\"/\">Application</a>",
+          @results = [  "<a href=\"/\">Home</a>",
                       "<a href=\"/countries\">Countries list</a>",
                       "<a href=\"/countries/#{@usa.id}\">United States of America</a>",
                       "<a href=\"/countries/#{@usa.id}/movies\">Movies</a>",
-                      "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}\">Titanic</a>",
+                      "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}\">Movie</a>",
                       "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}/actors\">Actors</a>",
                       "<a href=\"/countries/#{@usa.id}/movies/#{@titanic.id}/actors/#{@leo.id}\">Leonardo Di Caprio</a>"]
         end
