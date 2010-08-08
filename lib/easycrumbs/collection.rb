@@ -81,7 +81,7 @@ module EasyCrumbs
 
     # Return array of breadcrumbs object in right order
     def make_breadcrumbs(options = {})
-      breadcrumbs = [Breadcrumb.new(ApplicationController.new)]
+      breadcrumbs = [Breadcrumb.new(ApplicationController.new, options)]
       objects.each_with_index do |object, index|
         options.merge!({:action => @action}) if index == objects.size - 1
         options.merge!({:path => @pathes[index]})
