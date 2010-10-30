@@ -12,6 +12,9 @@ If you don't have the {Gemcutter sources}[http://gemcutter.org/pages/gem_docs] y
 
 To install the gem type:
   gem install easycrumbs
+  
+Add it to your Gemfile
+  gem "easycrumbs"
 
 == Quick start
 
