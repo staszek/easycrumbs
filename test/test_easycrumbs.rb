@@ -48,11 +48,11 @@ class TestEasycrumbs < Test::Unit::TestCase
             assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo).name)
           end
 
-          should "return model name if it not respond to name_column method and i18n is turn off" do
+          should "return model name if it not respond to name_column method and i18n is turned off" do
             assert_equal("Movie", Breadcrumb.new(Movie.new).name)
           end
 
-          should "return model name from i18n if it not respond to name_column method and i18n is turn on" do
+          should "return model name from i18n if it not respond to name_column method and i18n is turned on" do
             I18n.expects(:t).with("breadcrumbs.models.movie").returns("Das film")
             assert_equal("Das film", Breadcrumb.new(Movie.new, :i18n => true).name)
           end
@@ -69,6 +69,11 @@ class TestEasycrumbs < Test::Unit::TestCase
 
           should "return breadcrumb method from controller" do
             assert_equal("Countries list", Breadcrumb.new(CountriesController.new).name)
+          end
+
+          should "return transalted name for controller when i18n is turned on" do
+            I18n.expects(:t).with("breadcrumbs.controllers.movies").returns("la movies")
+            assert_equal("la movies", Breadcrumb.new(MoviesController.new, :i18n => true).name)
           end
         end
 
@@ -92,15 +97,8 @@ class TestEasycrumbs < Test::Unit::TestCase
           should "return only name if action is not in prefix array" do
             assert_equal("Leonardo Di Caprio", Breadcrumb.new(@leo, :action => "show", :prefix => [:destroy, :edit]).name)
           end
-        end
 
-        context "with i18n enable" do
-          should "return transalted name for controller" do
-            I18n.expects(:t).with("breadcrumbs.controllers.movies").returns("la movies")
-            assert_equal("la movies", Breadcrumb.new(MoviesController.new, :i18n => true).name)
-          end
-
-          should "return transalted action as a prefix" do
+          should "return transalted action as a prefix when i18n is turned on" do
             name = "Leonardo Di Caprio"
             I18n.expects(:t).with("breadcrumbs.actions.edit", {:name => name}).returns("Editzione #{name}")
             assert_equal("Editzione Leonardo Di Caprio", Breadcrumb.new(@leo, :i18n => true, :action => "edit").name)
@@ -293,9 +291,7 @@ class TestEasycrumbs < Test::Unit::TestCase
 
         should "return array of breadcrumbs objects" do
           assert_equal(@collection.objects.size + 1, @results.size)
-          results = @results.map(&:class).uniq
-          assert_equal(1, results.size)
-          assert_equal(EasyCrumbs::Breadcrumb, results.first)
+          @results.map.uniq == [EasyCrumbs::Breadcrumb]
         end
 
         should "last breadcrumb have name with action prefix" do
