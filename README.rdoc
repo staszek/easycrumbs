@@ -189,7 +189,7 @@ By default last element will always be render as hyperlink. If you would like to
   
 == Custom collection
 If you do not like idea that breadcrumbs are recognized using routes.rb file then you can write your own breadcrumbs generator.
-You can write new class inherited from EasyCrumbs::Collection or just monkey patch initialize method from EasyCrumbs::Collection
+Create new class inherited from EasyCrumbs::Collection or just monkey patch initialize method from EasyCrumbs::Collection
 
 Look at example for acts_as_tree gem
 
@@ -207,18 +207,18 @@ Look at example for acts_as_tree gem
     end
   end
   
- * you will get request object and options hash from view helper(look at lib/easycrumbs/view_helpers.rb for more details)
- * you have to set @breadcrumbs as collection of EasyCrumbs::Breadcrumb objects
- * remember to pass options hash to every EasyCrumbs::Breadcrumb object
- * path have to be a hash and has to be recognized by rails routing system 
+* you will get request object and options hash from view helper(look at lib/easycrumbs/view_helpers.rb for more details)
+* you have to set @breadcrumbs as collection of EasyCrumbs::Breadcrumb objects
+* remember to pass options hash to every EasyCrumbs::Breadcrumb object
+* path have to be a hash and has to be recognized by rails routing system 
  
 For objects:
-  grandfather = Person.new, :breadcrumb => "Grandfather"
-  father = Person.new :parent => grandfather, :breadcrumb => "Father"
-  son = Person.new :parent => father, :breadcrumb => "Son"
-  
+  grandfather = Person.create, :breadcrumb => "Grandfather"
+  father = Person.create :parent => grandfather, :breadcrumb => "Father"
+  son = Person.create :parent => father, :breadcrumb => "Son"
+The code:
   breadcrumbs, :last_link => false
-will generate this code:
+will generate this:
   <a href="/people/1">Grandfather</a> > <a href="/people/2">Father</a> > Son
   
 Look at code at tests for more details
