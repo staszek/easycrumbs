@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{easycrumbs}
-  s.version = "0.1.0"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Stanis\305\202aw Kolarzowski"]
-  s.date = %q{2010-08-08}
+  s.date = %q{2010-10-30}
   s.description = %q{Easy breadcrumbs for your website}
   s.email = %q{stanislaw.kolarzowski@gmail.com}
   s.extra_rdoc_files = [
