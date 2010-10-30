@@ -104,7 +104,7 @@ Similar to models you can specify custom breadcrumb method
 Controller can also use i18n names
   breadcrumbs :i18n => true
 
-Name will be taken from this key if your controller does not have method:
+Name will be taken from this key if your controller does not have breadcrumb method:
     breadcrumbs.controllers.controller_name
 Example en.yml
   en:
@@ -118,16 +118,71 @@ Example en.yml
   H0m3 > C0untr135 > Usa > M0v135 > Titanic > 4ct0r5 > Edit Leonardo Di Caprio
 
 == Action prefixes
-default behavior
-from i18n
+For last element you can add current action name as prefix.
+Example with Editing actor object:
+    Home > Countries > Usa > Movies > Titanic > Actors > *Edit* Leonardo Di Caprio
+
+=== Default
+For default prefix is added only for new and edit actions.
+      Home > Countries > Usa > Movies > Titanic > Actors > *Edit* Leonardo Di Caprio
+      Home > Countries > Usa > Movies > Titanic > Actors > *New* Leonardo Di Caprio
+      
+=== Custom
+You can change this behavior. Just set :prefix option as you want:
+* :every - prefix will be added for every action
+  breadcrumbs :prefix => :every
+  action show => Actors > *Show* Leonardo Di Caprio
+  action new  => Actors > *New* Leonardo Di Caprio
+  action edit => Actors > *Edit* Leonardo Di Caprio
+* :none  - prefix will not be added to any action
+  breadcrumbs :prefix => :none
+  action show => Actors > Leonardo Di Caprio
+  action new  => Actors > Leonardo Di Caprio
+  action edit => Actors > Leonardo Di Caprio
+* array of action names - prefix will be added only for specified actions
+  breadcrumbs :prefix => [:show, :new]
+  action show => Actors > *Show* Leonardo Di Caprio
+  action new  => Actors > *New* Leonardo Di Caprio
+  action edit => Actors > Leonardo Di Caprio
+  
+=== From i18n
+Action names can also be taken from i18n
+  breadcrumbs :i18n => true
+  
+Name will be taken from this key if your controller does not have breadcrumb method:
+  breadcrumbs.actions.action_name
+Example en.yml
+    en:
+        breadcrumbs:
+          actions:
+              new: N3w {{name}}
+              edit: 3d1t {{name}}
+              show: {{name}} 5h0w
 
 == Blank links option
+When path will not be recognized then exception be raised
+  EasyCrumbs::NoPath
+If you would like to have blank link(just text, without hyperlink) instead then just set :blank_links option
+  breadcrumbs :blank_links => true
 
 == Rendering options
+You can set some rendering options also:
 
-separator
-last_link
+=== Separator
+Default breadcrumbs separator is set to " > ", but you can use something else if you want
+  breadcrumbs :separator => ' ==> '
+  Home ==> Countries ==> Usa ==> Movies ==> Titanic ==> Actors ==> Edit Leonardo Di Caprio
+  
+  breadcrumbs :separator => '/'
+  Home/Countries/Usa/Movies/Titanic/Actors/Edit Leonardo Di Caprio
 
+=== Last element as hyperlink
+By default last element will always be render as hyperlink. If you would like to render it in plain text then use :last_link option
+  breadcrumbs :last_link => false
+  <a href="/actors"/>Actors</a> ==> Edit Leonardo Di Caprio
+  
+  breadcrumbs :last_link => true
+  <a href="/actors"/>Actors</a> ==> <a href="/actors/1/edit">Edit Leonardo Di Caprio</a>
+  
 == Copyright
-
 Copyright (c) 2010 Stanisław Kolarzowski. See LICENSE for details.
