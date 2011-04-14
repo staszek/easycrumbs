@@ -1,9 +1,7 @@
-require 'rubygems'
 require 'test/unit'
 require 'shoulda'
 require "mocha"
 require 'active_record'
-require "action_view"
 require "action_controller"
 require "routes"
 
