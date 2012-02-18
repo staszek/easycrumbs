@@ -6,6 +6,7 @@ require "action_controller"
 require "routes"
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'support', 'helpers'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'easycrumbs'
 

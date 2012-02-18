@@ -291,7 +291,7 @@ class TestEasycrumbs < Test::Unit::TestCase
 
         should "return array of breadcrumbs objects" do
           assert_equal(@collection.objects.size + 1, @results.size)
-          @results.map.uniq == [EasyCrumbs::Breadcrumb]
+          @results.uniq == [EasyCrumbs::Breadcrumb]
         end
 
         should "last breadcrumb have name with action prefix" do
