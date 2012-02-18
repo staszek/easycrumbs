@@ -1,7 +1,7 @@
 source 'http://gemcutter.org'
 source 'http://gems.github.com'
 
-gem 'rails', '=2.3.10'
+gem 'rails', '~> 2.3.0'
 
 group :development do
 	gem 'mocha', '=0.9.12'
