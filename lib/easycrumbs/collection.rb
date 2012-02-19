@@ -17,9 +17,7 @@ module EasyCrumbs
     # Finding route with given path and method
     # Return ActionController:Routing::Route object
     def find_route
-      routes = ActionController::Routing::Routes.routes.select do |route|
-        route.recognize(request_path, :method => request_method) != nil
-      end
+      routes = Rails.application.routes.router.recognize(request_path)
       raise EasyCrumbs::NotRecognized if routes.empty?
       routes.first
     end

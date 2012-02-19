@@ -1,9 +1,12 @@
-ActionController::Routing::Routes.draw do |map|
-	
-	map.resources :countries do |country|
-		country.resources :movies do |movie|
-		  movie.resources :actors
+module EasyCrumbs
+  class Application < ::Rails::Application
+  end
+end
+
+EasyCrumbs::Application.routes.draw do
+	resources :countries do
+		resources :movies do
+		  resources :actors
 		end
 	end	
-	
 end
