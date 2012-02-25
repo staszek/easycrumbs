@@ -9,6 +9,7 @@ require "routes"
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), 'support', 'helpers'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
+require 'support/stub_request'
 require 'easycrumbs'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
