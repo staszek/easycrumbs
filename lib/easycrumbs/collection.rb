@@ -70,12 +70,14 @@ module EasyCrumbs
     def pick_controller(segment)
       #segment = last_controller_segment if segment.value == "new"
       #"#{segment.value.titlecase}Controller".constantize.new
-      "#{segment.first.to_s.titlecase}Controller".constantize.new
+      segment = last_controller_segment if segment.first == :new
+      "#{segment.first.to_s.titlecase}Controller".constantize.new rescue nil
     end
 
     # Returns last controller segment in segments
     def last_controller_segment
-      segments.select{ |seg| seg.is_a?(ActionController::Routing::StaticSegment) && seg.value != "new"}.last
+      #segments.select{ |seg| seg.is_a?(ActionController::Routing::StaticSegment) && seg.value != "new"}.last
+      segments.select{ |seg| seg.second == :static && seg.first != :new }.last
     end
 
     # Retrung model object from dynamic segment
@@ -120,23 +122,23 @@ module EasyCrumbs
 
     # Retrurn parameters for path of model
     # If it is last object then action is equal to request action
-    def path_for_model(segment)
-      key = segment.first
-      if key == :id
-        {:action => @action, :id => @path[key]}
-      else
-        {:action => 'show', key => @path[key]}
-      end
-    end
+    #def path_for_model(segment)
+    #  key = segment.value
+    #  if key == :id
+    #    {:action => @action, :id => @path[key]}
+    #  else
+    #    {:action => 'show', key => @path[key]}
+    #  end
+    #end
 
     # Retrun parameters for path of controller
-    def path_for_controller(segment)
-      if segment.value == "new"
-        {:action => "new", :controller => last_controller_segment.value}
-      else
-        {:action => 'index', :controller => segment.value}
-      end
-    end
+    #def path_for_controller(segment)
+    #  if segment.value == "new"
+    #    {:action => "new", :controller => last_controller_segment.value}
+    #  else
+    #    {:action => 'index', :controller => segment.value}
+    #  end
+    #end
 
     # If controller name is connected with object then parameter should be :id instead of :object_id
     # {:controller => 'movies', :movie_id => 1} will be {:controller => 'movies', :id => 1}
@@ -169,7 +171,7 @@ module EasyCrumbs
       #  result.dup
       #end
       result = []
-      @route.first.to_s.split("/")[1..-1].inject([]) do |current_path, segment|
+      @route.first.to_s.split("/")[1...-1].inject([]) do |current_path, segment|
         current_path << segment
         request = ActionDispatch::Request.new("PATH_INFO"     => "/#{current_path.join("/")}",
                                               "REQUEST_METHOD"  => "GET")
@@ -179,7 +181,7 @@ module EasyCrumbs
         current_path
       end
 
-      result.compact
+      (result << @route.second).compact
     end
 
     def render(options = {})
