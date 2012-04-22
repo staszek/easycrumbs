@@ -171,17 +171,18 @@ module EasyCrumbs
       #  result.dup
       #end
       result = []
-      @route.first.to_s.split("/")[1...-1].inject([]) do |current_path, segment|
-        current_path << segment
-        request = ActionDispatch::Request.new("PATH_INFO"     => "/#{current_path.join("/")}",
-                                              "REQUEST_METHOD"  => "GET")
-
-        result << (find_route(request).second rescue nil)
-
-        current_path
+      begin
+        @route.first.to_s.split("/")[1...-1].inject([]) do |current_path, segment|
+          current_path << segment
+          request = ActionDispatch::Request.new("PATH_INFO"  => "/#{current_path.join("/")}","REQUEST_METHOD"  => "GET")
+          result << (find_route(request).second rescue nil)
+          current_path
+        end
+        (result << @route.second).compact
+      rescue nil
+      rescue Exception => e
+        Rails.logger.debug "Easycrumbs make_pathes exception: #{e.message}\n#{e.inspect}"
       end
-
-      (result << @route.second).compact
     end
 
     def render(options = {})
