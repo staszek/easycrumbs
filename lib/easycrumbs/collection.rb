@@ -160,16 +160,6 @@ module EasyCrumbs
     # {:action => 'index', :controller => 'actors', :country_id => 1, :movie_id => 2},
     # {:action => 'update', :controller => 'actors', :country_id => 1, :movie_id => 2, :id => 3}
     def make_pathes
-      #path = {}
-      #segments.map do |segment|
-      #  if segment.is_a? ActionController::Routing::DynamicSegment
-      #    path.merge! path_for_model(segment)
-      #    result = repaired_model_path(path)
-      #  else
-      #    result = path.merge! path_for_controller(segment)
-      #  end
-      #  result.dup
-      #end
       result = []
       begin
         @route.first.to_s.split("/")[1...-1].inject([]) do |current_path, segment|
