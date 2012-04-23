@@ -88,11 +88,11 @@ module EasyCrumbs
       i18n == true ? I18n.t("breadcrumbs.actions.#{action}", :name => name) : "#{action.titlecase} #{name}"
     end
 
-    # Set path using hash from ActionController::Routing::Routes.recognize_path
+    # Set path using hash from Rails.application.routes.recognize_path
     # Example looks like:
     # {:country_id => "1", :movie_id => "1", :id => "1", :action => "show", :controller => "movies"}
     def set_path(path, blank_links)
-      path.nil? || path.empty? ? "/" : ActionController::Routing::Routes.generate_extras(path).first
+      path.nil? || path.empty? ? "/" : Rails.application.routes.generate_extras(path).first
       rescue ActionController::RoutingError => e
         raise EasyCrumbs::NoPath.new(e.message) unless blank_links == true
         nil
