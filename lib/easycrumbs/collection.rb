@@ -92,7 +92,7 @@ module EasyCrumbs
         return nil
       end
 
-      model = model.titlecase.constantize
+      model = model.classify.constantize
       model.find(@path[key])
     end
 
